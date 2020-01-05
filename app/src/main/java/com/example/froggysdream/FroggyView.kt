@@ -24,9 +24,14 @@ class FroggyView(context: Context, private val size: Point)
     private var canvas: Canvas = Canvas()
     private val paint: Paint = Paint()
 
+    // Platforms
+    public var platforms: Platforms = Platforms(size.x, size.y)
 
-    // The players ship
-    private var froggy: Froggy = Froggy(context, size.x, size.y)
+
+    // The frog
+    private var froggy: Froggy = Froggy(context, platforms, size.x, size.y)
+
+
 
     private var score = 0 // score
     private var waves = 1 // waves
@@ -77,8 +82,8 @@ class FroggyView(context: Context, private val size: Point)
     private fun update(fps: Long) {
         // Update the state of all the game objects
 
-        // Move the player's ship
-        froggy.update(fps)
+        // Move the frog
+        froggy.update(fps, platforms)
 
     }
 
@@ -96,7 +101,10 @@ class FroggyView(context: Context, private val size: Point)
             paint.color = Color.argb(255, 0, 255, 0)
 
             // Draw all the game objects here
-            // Player spaceship
+            canvas.drawRect(platforms.ground, paint) // ground
+
+
+            // Froggy
             canvas.drawBitmap(froggy.bitmap, froggy.position.left,
                 froggy.position.top
                 , paint)
@@ -145,58 +153,27 @@ class FroggyView(context: Context, private val size: Point)
 
         // only register new event when the frog has stopped its last jump
         if (froggy.moving == Froggy.stopped){
+
+
             // Get the events to be recorded only when a button has been released
             when (motionEvent.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_POINTER_UP,
                 MotionEvent.ACTION_UP-> {
 
                     paused = false
+                    froggy.moving = Froggy.jumping
 
                     froggy.targetX = touchX
                     froggy.targetY = touchY
                     froggy.targetPower = duration
 
-                    froggy.moving = Froggy.jumping
+
                 }
         }
 
 
         }
 
-
-
-
-
-
-//        when (motionEvent.action and MotionEvent.ACTION_MASK) {
-//
-//
-//            // Player has touched the screen
-//            // Or moved their finger while touching screen
-//            MotionEvent.ACTION_POINTER_DOWN,
-//            MotionEvent.ACTION_DOWN,
-//            MotionEvent.ACTION_MOVE-> {
-//                paused = false
-//
-//                if (motionEvent.y > size.y - size.y / 8) {
-//                    if (motionEvent.x > size.x / 2) {
-//                        froggy.moving = Froggy.right
-//                    } else {
-//                        froggy.moving = Froggy.left
-//                    }
-//
-//                }
-//            }
-//
-//            // Player has removed finger from screen
-//            MotionEvent.ACTION_POINTER_UP,
-//            MotionEvent.ACTION_UP -> {
-//                if (motionEvent.y > size.y - size.y / 10) {
-//                    froggy.moving = Froggy.stopped
-//                }
-//            }
-//
-//        }
         return true
     }
 }

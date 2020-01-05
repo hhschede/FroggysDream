@@ -9,10 +9,11 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 class Froggy(context: Context,
-                 private val screenX: Int,
-                 screenY: Int) {
+             platforms: Platforms,
+             private val screenX: Int,
+             screenY: Int) {
 
-    // The player frog will be represented by a Bitmap
+    // Bitmap representation of frog
     var bitmap: Bitmap = BitmapFactory.decodeResource(
         context.resources,
         R.drawable.froggyicon)
@@ -24,12 +25,13 @@ class Froggy(context: Context,
     // This keeps track of where the frog is
     val position = RectF(
         screenX / 2f,
-        screenY-height,
+        platforms.ground.top-height,
         screenX/2 + width,
         screenY.toFloat())
 
     // This will dictate how the duration of the press influences the distance the frog moves
     private val powerConstraint = 2
+    private var gravity = 0.5f
 
     // This data is accessible using ClassName.propertyName
     companion object {
@@ -43,6 +45,7 @@ class Froggy(context: Context,
     var moving = stopped
     var targetX = 0f
     var targetY = 0f
+    var time = 0f
     var targetPower: Long = 0
 
     init{
@@ -57,37 +60,60 @@ class Froggy(context: Context,
     // This update method will be called from update in
     // FroggyView. It determines if the player's
     // frog needs to move and changes the coordinates
-    fun update(fps: Long) {
+    fun update(fps: Long, platforms: Platforms) {
         // Move when frog is in jumping motion
-        if (moving == jumping ) {
+        if (moving == jumping) {
             //position.left -= speed / fps
             // move towards the position defined by targetX and targetY
 
             var deltaX = targetX - position.left
             var deltaY = targetY - position.top
             // rescale values so vector is unitary
-            val vectorLength = sqrt(deltaX.pow(2) + deltaY.pow(2))
+            val vectorLength = sqrt(deltaX.pow(2) + deltaY.pow(2)) / 2f
             deltaX /= vectorLength
             deltaY /= vectorLength
+
 
             // continue to change the coordinates as the duration of the press is still above 0
             if (targetPower > 0){
                 position.left += deltaX
-                position.top += deltaY
+                position.top += deltaY + gravity * (time.pow(2) / 10000)
                 targetPower -= powerConstraint
+
             }
 
-            // indicate that the frog cannot move anymore
-            if (targetPower <= 0) {
+            if (position.top + height < platforms.ground.top){
+                position.top += gravity * (time.pow(2) / 10000)
+                //gravity += 0.1f
+            }
+
+
+            time += 1f
+
+
+
+            // indicate that the frog cannot move anymore either because it landed on a platform
+            // or because the duration is over
+            if (time > 10 && withinPlatformBounds(platforms.ground.top, position.top + height)) {
                 moving = stopped
+                gravity = 0.5f // reset gravity
+                time = 0f // reset time
             }
 
-            //position.left = targetX
-            //position.top = targetY
         }
 
         else
         position.right = position.left + width
+    }
+
+    private fun withinPlatformBounds(platformTop: Float, frogPosition: Float) : Boolean{
+
+        var inBounds = false
+
+        if (platformTop - 1f < frogPosition || platformTop + 1f < frogPosition) {
+            inBounds = true
+        }
+        return inBounds
     }
 
 }
