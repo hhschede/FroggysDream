@@ -83,7 +83,7 @@ class FroggyView(context: Context, private val size: Point)
         // Update the state of all the game objects
 
         // Move the frog
-        froggy.update(fps, platforms)
+        froggy.update(platforms)
 
     }
 
@@ -101,8 +101,13 @@ class FroggyView(context: Context, private val size: Point)
             paint.color = Color.argb(255, 0, 255, 0)
 
             // Draw all the game objects here
-            canvas.drawRect(platforms.ground, paint) // ground
 
+            // draw platforms
+            canvas.drawRect(platforms.ground, paint) // ground
+            paint.color = Color.argb(255, 255, 255, 255)
+            for (additionalPlatform in platforms.morePlatforms){
+                canvas.drawRect(additionalPlatform, paint)
+            }
 
             // Froggy
             canvas.drawBitmap(froggy.bitmap, froggy.position.left,
@@ -111,7 +116,7 @@ class FroggyView(context: Context, private val size: Point)
 
             // Draw the score and remaining lives
             // Change the brush color
-            paint.color = Color.argb(255, 255, 255, 255)
+
             paint.textSize = 70f
             canvas.drawText("Score: $score   Lives: $lives Wave: " +
                     "$waves HI: $highScore", 20f, 75f, paint)
