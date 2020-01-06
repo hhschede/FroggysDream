@@ -31,26 +31,36 @@ class FroggyView(context: Context, private val size: Point)
     // The frog
     private var froggy: Froggy = Froggy(context, platforms, size.x, size.y)
 
+    // Insects
+    private val insects = ArrayList<Insects>()
 
 
     private var score = 0 // score
     private var waves = 1 // waves
     private var lives = 3 // number of lives
     private var highScore =  0 // high scores
+    private var numInsects = 2
 
-    // How menacing should the sound be?
-    private var menaceInterval: Long = 1000
-
-
-    // Which menace sound should play next
-    private var uhOrOh: Boolean = false
-    // When did we last play a menacing sound
-    private var lastMenaceTime = System.currentTimeMillis()
 
     private fun prepareLevel() {
-        // Here we will initialize the game objects
+        // Here we will initialize the insects
 
+        for (i in 0 until numInsects){
+            insects.add(Insects(context, size.x, size.y))
+        }
+    }
 
+    private fun caughtInsect(frogPosition: RectF, insectList: ArrayList<Insects>){
+        // if any of the corners of the frog box lie inside the box delineated by the insect,
+        // the insect will die!
+
+        insectList.forEachIndexed { i, insect ->
+            val overlap = RectF.intersects(frogPosition, insect.position)
+            if (overlap == true){
+                insectList.removeAt(i)
+
+            }
+        }
     }
 
 
@@ -83,7 +93,15 @@ class FroggyView(context: Context, private val size: Point)
         // Update the state of all the game objects
 
         // Move the frog
-        froggy.update(platforms)
+        froggy.update(platforms, insects)
+
+        // Update the insects
+        for (insect_ in insects){
+            insect_.update(4)
+        }
+
+        // frog eats stuff
+        caughtInsect(froggy.position, insects)
 
     }
 
@@ -113,6 +131,11 @@ class FroggyView(context: Context, private val size: Point)
             canvas.drawBitmap(froggy.bitmap, froggy.position.left,
                 froggy.position.top
                 , paint)
+            for (insect_ in insects){
+                canvas.drawBitmap(insect_.bitmap1, insect_.position.left,
+                    insect_.position.top, paint)
+            }
+
 
             // Draw the score and remaining lives
             // Change the brush color
