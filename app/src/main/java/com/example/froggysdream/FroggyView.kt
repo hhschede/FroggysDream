@@ -57,16 +57,19 @@ class FroggyView(context: Context, private val size: Point)
         insectList.forEachIndexed { i, insect ->
             val overlap = RectF.intersects(frogPosition, insect.position)
             if (overlap == true){
-                insectList.removeAt(i) // remove the item
+
 
                 // update scores and bugsEaten and determine if its a bad insect or a good one
                 if (insect.badOrGood == 1) {
                     score += 10
                     bugsEaten += 1
                 } else if (insect.badOrGood == 0){
-                    score -= 10
+                    score -= 20
                     lives -= 1
+                    bugsEaten += 1
                 }
+
+                insectList.removeAt(i) // remove the item
 
             }
         }
