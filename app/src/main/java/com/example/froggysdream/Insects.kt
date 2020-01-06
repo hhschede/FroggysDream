@@ -30,9 +30,16 @@ class Insects(context: Context, screenX: Int, screenY: Int) {
 
 
     // Initialize the bitmaps
-    var bitmap1 = BitmapFactory.decodeResource(
-        context.resources,
-        R.drawable.wasp)
+    var badOrGood = (0..1).random() // 0 is a butterfly, 1 is a wasp
+    var bitmap1 = if (badOrGood == 0) {
+        BitmapFactory.decodeResource(
+            context.resources,
+            R.drawable.wasp)
+    } else {
+        BitmapFactory.decodeResource(
+            context.resources,
+            R.drawable.butterfly)
+    }
 
     init{
         // stretch the bitmap to a size

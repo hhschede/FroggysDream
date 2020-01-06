@@ -36,7 +36,7 @@ class FroggyView(context: Context, private val size: Point)
 
 
     private var score = 0 // score
-    private var waves = 1 // waves
+    private var bugsEaten = 0 // waves
     private var lives = 3 // number of lives
     private var highScore =  0 // high scores
     private var numInsects = 2
@@ -57,7 +57,16 @@ class FroggyView(context: Context, private val size: Point)
         insectList.forEachIndexed { i, insect ->
             val overlap = RectF.intersects(frogPosition, insect.position)
             if (overlap == true){
-                insectList.removeAt(i)
+                insectList.removeAt(i) // remove the item
+
+                // update scores and bugsEaten and determine if its a bad insect or a good one
+                if (insect.badOrGood == 1) {
+                    score += 10
+                    bugsEaten += 1
+                } else if (insect.badOrGood == 0){
+                    score -= 10
+                    lives -= 1
+                }
 
             }
         }
@@ -141,8 +150,8 @@ class FroggyView(context: Context, private val size: Point)
             // Change the brush color
 
             paint.textSize = 70f
-            canvas.drawText("Score: $score   Lives: $lives Wave: " +
-                    "$waves HI: $highScore", 20f, 75f, paint)
+            canvas.drawText("Score: $score   Lives: $lives" +
+                    " HI: $highScore", 20f, 75f, paint)
 
             // Draw everything to the screen
             holder.unlockCanvasAndPost(canvas)

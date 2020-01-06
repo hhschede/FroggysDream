@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.RectF
 import android.graphics.BitmapFactory
+import android.graphics.Rect
 import android.util.Log
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -62,7 +63,8 @@ class Froggy(context: Context,
     // This update method will be called from update in
     // FroggyView. It determines if the player's
     // frog needs to move and changes the coordinates
-    fun update(platforms: Platforms) {
+    fun update(platforms: Platforms, insectList: ArrayList<Insects>) {
+
         // Move when frog is in jumping motion
         if (moving == jumping) {
             //position.left -= speed / fps
@@ -151,6 +153,10 @@ class Froggy(context: Context,
         }
         return interception
     }
+
+    // function to determine if the frog overlaps with an insect
+
+
 
 
 }
